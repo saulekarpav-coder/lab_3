@@ -1,17 +1,7 @@
-import os
-
 import pandas as pd 
-
-
-base_dir = os.path.dirname(__file__)
-file_path = os.path.join(base_dir, "duomenys", "athlete_events.csv")
-
-df = pd.read_csv(file_path).sample(n=50_000, random_state=42)
-
-base_dir = os.path.dirname(__file__)
-file_path = os.path.join(base_dir, "athlete_events.csv")
+df = pd.read_csv("athlete_events.csv").sample(n=50_000, 
+random_state=42) 
 df.to_csv("athlete_events.csv", index=False)
-
 
 import time
 import random
