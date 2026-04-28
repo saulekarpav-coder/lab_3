@@ -15,3 +15,64 @@ TOPK_KEY = "Age"
 
 df = df.dropna(subset=[EXACT_KEY, BST_KEY, TOPK_KEY])
 data = df.to_dict("records")
+
+
+
+def linear_search(arr, key, value):
+    for item in arr:
+        if item[key] == value:
+            return item
+    return None
+
+
+def binary_search(arr, key, value):
+    low, high = 0, len(arr) - 1
+    while low <= high:
+        mid = (low + high) // 2
+        if arr[mid][key] == value:
+            return arr[mid]
+        elif arr[mid][key] < value:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return None
+
+
+def jump_search(arr, key, value):
+    n = len(arr)
+    step = int(n ** 0.5)
+    prev = 0
+
+    while arr[min(step, n) - 1][key] < value:
+        prev = step
+        step += int(n ** 0.5)
+        if prev >= n:
+            return None
+
+    for i in range(prev, min(step, n)):
+        if arr[i][key] == value:
+            return arr[i]
+    return None
+
+
+def interpolation_search(arr, key, value):
+    low, high = 0, len(arr) - 1
+
+    while low <= high and arr[low][key] <= value <= arr[high][key]:
+        if arr[high][key] == arr[low][key]:
+            break
+
+        pos = low + int(
+            (high - low)
+            * (value - arr[low][key])
+            / (arr[high][key] - arr[low][key])
+        )
+
+        if arr[pos][key] == value:
+            return arr[pos]
+        elif arr[pos][key] < value:
+            low = pos + 1
+        else:
+            high = pos - 1
+
+    return None
