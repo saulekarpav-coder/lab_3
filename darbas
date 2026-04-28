@@ -76,3 +76,111 @@ def interpolation_search(arr, key, value):
             high = pos - 1
 
     return None
+
+def benchmark_search():
+    sizes = [1000, 10000, 50000]
+    results = {"linear": [], "binary": [], "jump": [], "interp": []}
+
+    for n in sizes:
+        subset = data[:n]
+        subset_sorted = sorted(subset, key=lambda x: x[EXACT_KEY])
+
+        target = random.choice(subset_sorted)[EXACT_KEY]
+
+        for name, func, arr in [
+            ("linear", linear_search, subset),
+            ("binary", binary_search, subset_sorted),
+            ("jump", jump_search, subset_sorted),
+            ("interp", interpolation_search, subset_sorted),
+        ]:
+            times = []
+            for _ in range(3):
+                start = time.perf_counter()
+                func(arr, EXACT_KEY, target)
+                end = time.perf_counter()
+                times.append((end - start) * 1000)
+
+            results[name].append(sum(times) / 3)
+
+    return sizes, results
+
+
+class Node:
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+        self.left = None
+        self.right = None
+
+
+class BST:
+    def __init__(self):
+        self.root = None
+
+    def insert(self, key, value):
+        def _insert(node, key, value):
+            if not node:
+                return Node(key, value)
+            if key < node.key:
+                node.left = _insert(node.left, key, value)
+            else:
+                node.right = _insert(node.right, key, value)
+            return node
+
+        self.root = _insert(self.root, key, value)
+
+    def search(self, key):
+        node = self.root
+        while node:
+            if key == node.key:
+                return node.value
+            node = node.left if key < node.key else node.right
+        return None
+
+    def inorder(self):
+        res = []
+
+        def _in(node):
+            if node:
+                _in(node.left)
+                res.append(node.key)
+                _in(node.right)
+
+        _in(self.root)
+        return res
+
+    def range_query(self, low, high):
+        res = []
+
+        def _range(node):
+            if not node:
+                return
+            if low < node.key:
+                _range(node.left)
+            if low <= node.key <= high:
+                res.append(node.value)
+            if node.key < high:
+                _range(node.right)
+
+        _range(self.root)
+        return res
+    
+    def test_bst(): 
+        tree = BST()
+
+        for row in data[:50000]:
+            tree.insert(row[BST_KEY], row)
+
+        low, high = 2000, 2010
+
+        start = time.perf_counter()
+        res_tree = tree.range_query(low, high)
+        t1 = (time.perf_counter() - start) * 1000
+
+        start = time.perf_counter()
+        res_naive = [r for r in data[:50000] if low <= r[BST_KEY] <= high]
+        t2 = (time.perf_counter() - start) * 1000
+
+        print("BST:", t1, "ms")
+        print("Naive:", t2, "ms")
+        print("Count:", len(res_tree))
