@@ -1,4 +1,17 @@
 import pandas as pd 
 df = pd.read_csv("athlete_events.csv").sample(n=50_000, 
 random_state=42) 
-df.to_csv("athlete_events.csv", index=False) 
+df.to_csv("athlete_events.csv", index=False)
+
+import time
+import random
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("athlete_events.csv")
+
+EXACT_KEY = "ID"
+BST_KEY = "Year"
+TOPK_KEY = "Age"
+
+df = df.dropna(subset=[EXACT_KEY, BST_KEY, TOPK_KEY])
+data = df.to_dict("records")
