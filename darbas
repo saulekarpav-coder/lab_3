@@ -235,3 +235,23 @@ def top_k():
             heap.replace_root(row)
 
     print("Top 10:", [r[TOPK_KEY] for r in heap.heap])
+
+
+def plot_results(sizes, results):
+    for key in results:
+        plt.plot(sizes, results[key], label=key)
+
+    plt.xlabel("n")
+    plt.ylabel("ms")
+    plt.legend()
+    plt.show()
+
+def test_bst():
+    print("BST veikia")
+    
+if __name__ == "__main__":
+    sizes, results = benchmark_search()
+    plot_results(sizes, results)
+
+    test_bst()
+    top_k()
