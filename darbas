@@ -184,3 +184,54 @@ class BST:
         print("BST:", t1, "ms")
         print("Naive:", t2, "ms")
         print("Count:", len(res_tree))
+
+
+class MinHeap:
+    def __init__(self):
+        self.heap = []
+
+    def insert(self, val):
+        self.heap.append(val)
+        self._up(len(self.heap) - 1)
+
+    def _up(self, i):
+        while i > 0:
+            p = (i - 1) // 2
+            if self.heap[p][TOPK_KEY] <= self.heap[i][TOPK_KEY]:
+                break
+            self.heap[p], self.heap[i] = self.heap[i], self.heap[p]
+            i = p
+
+    def _down(self, i):
+        n = len(self.heap)
+        while True:
+            l, r = 2 * i + 1, 2 * i + 2
+            smallest = i
+
+            if l < n and self.heap[l][TOPK_KEY] < self.heap[smallest][TOPK_KEY]:
+                smallest = l
+            if r < n and self.heap[r][TOPK_KEY] < self.heap[smallest][TOPK_KEY]:
+                smallest = r
+
+            if smallest == i:
+                break
+
+            self.heap[i], self.heap[smallest] = self.heap[smallest], self.heap[i]
+            i = smallest
+
+    def replace_root(self, val):
+        self.heap[0] = val
+        self._down(0)
+
+
+def top_k():
+    k = 10
+    heap = MinHeap()
+
+    for row in data[:50000]:
+        if len(heap.heap) < k:
+            heap.insert(row)
+        elif row[TOPK_KEY] > heap.heap[0][TOPK_KEY]:
+            heap.replace_root(row)
+
+    print("Top 10:", [r[TOPK_KEY] for r in heap.heap])
